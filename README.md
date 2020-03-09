@@ -1,6 +1,6 @@
 # ansible
 
-``` Ansible use ssh client to perform jobs to the nodes. Ansible is agent less. That is why ansible needs to installed on the controll machine only.```
+``` Ansible uses ssh client to perform jobs to the nodes. Ansible is agent less. That is why ansible needs to installed on the controll machine only. But for some of module python is needed to be install on the remote machines.```
 
 Install ```Ansible``` on ```ubuntu```
 
@@ -87,8 +87,58 @@ If everything goes alright, you may ssh into that node from controll machine by 
 ssh klover-dev@ci
 ```
 
+User must be a sudo user in each nodes, to make user sudo user,
+
+ssh to that node from controll node, run,
+
+``` sudo visudo``` for ```ubuntu``` and ```su -``` then ```visudo``` for ```centos```
+A file will be opened. This is the file where you can set permissions to the users.
+
+Add a line like following to this file, then save.
+
+``` 
+klover-dev ALL=(ALL) NOPASSWD: ALL
+```
+
+## Ansible Inventory
+
+```Inventroy ``` file contains the information of remote machines in ``` individual``` host format, ```group``` and ```range``` host format. 
+
+```Ansible``` inventory file is placed at ```/etc/ansible``` directory. The name is ```hosts```.
+
+You can add indiviual remote machine as following,
+
+```
+ci ansible_user=klover@dev
+machine2 ansible_user=machine2_user
+```
+You can add remote machines as group
+
+```
+[Infra]
+ci ansible_user=klover@dev
+
+[worker]
+machine2 ansible_user=machine2_user
+```
+
+
+You can use range to define nodes as well
+
+```
+[Infra]
+ci[01:05]
+```
+The above range says, there's 5 nodes under Infra; ci01,ci02,ci03,ci4,ci05.
+
+There's some other [keys](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html) like ```ansible_user```, we can use.
 
 
 
+Test if your setup is okay,
+
+``` 
+ansible -m ping all
+```
 
 
