@@ -17,3 +17,22 @@ ansible localhost -m ping
 ```
 
 
+Output will be something loke following,
+
+```
+localhost | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+```
+
+
+## Configuring ansible
+
+## Our ansible controll machine must have the privileges to log in to the nodes and have the sudo privileges. We don't want to remember the IP address of the nodes as this is very difficult. So what we can do, we can provide a domain name to the nodes. To do this, we need to edit hosts file of our controll machine.
+
+``` 
+vi /ect/hosts
+
+```
+
