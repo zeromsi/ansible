@@ -6,12 +6,14 @@ Install ```Ansible``` on ```ubuntu```
 
 ```
 sudo apt-add-repository ppa:ansible/ansible
-```
-```
 sudo apt update
-```
-```
 sudo apt install ansible
+```
+
+To check if ansible installed successfully,
+
+```
+ansible localhost -m ping
 ```
 
 
