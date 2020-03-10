@@ -3,5 +3,10 @@
 - hosts: Infra
   become: yes
   tasks:
+    - name: install vsftpd on ubuntu
+      apt: name=vsftpd update_cache=yes state=latest
+      ignore_errors: yes
+      notify: start vsftpd
   handlers:
-     - name: start
+     - name: start vsftpd
+       service: name=vsftpd enabled=yes state=started

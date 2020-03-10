@@ -319,7 +319,7 @@ A ```Play``` contains a set of ```task``` and ```Handlers``` for a set of ```hos
 
 ### What is a ```task``` ?
 
-A ```task``` is a set of instructions [using ```command```, ```shell```,```file``` or ```raw``` module] and reference of ```handler``` if needed.
+A ```task``` is a set of instructions [using ```command```, ```shell```,```file```, ```apt```, ```yum```, ```debug``` or ```raw``` module] and reference of ```handler``` if needed.
 
 ### What is a ```Handler``` ?
 
@@ -383,4 +383,47 @@ ansible [goup name] -m setup
 For example,
 
 ``` ansible Infra -m setup ```
+
+
+
+## Ansible conditional
+
+[Example](examples/conditionals.yaml),
+
+```xml
+---
+
+- hosts: Infra
+  become: yes
+  tasks:
+    - name: install apache2
+      apt: name=apache2 state=latest
+      ignore_errors: yes
+      register: results
+
+    - name: install httpd
+      yum: name=httpd state=latest
+      when: results|failed
+
+```
+In this example, we're trying to install apache2 on our Infra nodes. Suppose we've tow nodes in this group; a ```centos``` and an ```ubuntu```. As ```apt``` is not available in ```centos```, this node will return ```failed``` and if so happen then the second task will get triggered. 
+
+Another way of doing this,[example](./examples/conditionals2.yaml)
+
+```xml
+
+---
+
+- hosts: Infra
+  become: yes
+  tasks:
+    - name: install apache2
+      apt: name=apache2 state=latest
+      when: ansible_os_family == "Debian"
+
+    - name: install httpd
+      yum: name=httpd state=latest
+      when: ansible_os_family == "RedHat"
+```
+Here ```ansible_os_family``` is ```fact``.
 
