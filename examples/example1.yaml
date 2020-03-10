@@ -1,0 +1,7 @@
+---
+
+- hosts: Infra
+  become: yes
+  tasks:
+  handlers:
+     - name: start

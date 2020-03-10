@@ -1,6 +1,6 @@
 # ansible
 
-``` Ansible uses ssh client to perform jobs to the nodes. Ansible is agent less. That is why ansible needs to installed on the controll machine only. But for some of module python is needed to be install on the remote machines.```
+Ansible uses ssh client to perform jobs to the nodes. Ansible is agent less. That is why ansible needs to be installed on the controll machine only. But for some of module python is needed to be install on the remote machines.
 
 Install ```Ansible``` on ```ubuntu```
 
@@ -141,4 +141,210 @@ Test if your setup is okay,
 ansible -m ping all
 ```
 
+
+Let's explore ```ansible playbook```,
+
+``` Playbook``` is all about play.
+
+```Play struct (basic)```
+
+```xml
+
+play{
+
+    hosts[],
+    become,
+
+    tasks[
+        {
+            name,
+            ignore_errors,
+            notify,
+        }
+    ],
+    handlers[]
+
+}
+
+```
+```Play Python class; attributes```
+```xml
+ class Play(Base, Taggable, CollectionSearch):
+
+    """
+    A play is a language feature that represents a list of roles and/or
+    task/handler blocks to execute on a given set of hosts.
+    Usage:
+       Play.load(datastructure) -> Play
+       Play.something(...)
+    """
+
+    # =================================================================================
+    _hosts = FieldAttribute(isa='list', required=True, listof=string_types, always_post_validate=True, priority=-1)
+
+    # Facts
+    _gather_facts = FieldAttribute(isa='bool', default=None, always_post_validate=True)
+    _gather_subset = FieldAttribute(isa='list', default=(lambda: C.DEFAULT_GATHER_SUBSET), listof=string_types, always_post_validate=True)
+    _gather_timeout = FieldAttribute(isa='int', default=C.DEFAULT_GATHER_TIMEOUT, always_post_validate=True)
+    _fact_path = FieldAttribute(isa='string', default=C.DEFAULT_FACT_PATH)
+
+    # Variable Attributes
+    _vars_files = FieldAttribute(isa='list', default=list, priority=99)
+    _vars_prompt = FieldAttribute(isa='list', default=list, always_post_validate=False)
+
+    # Role Attributes
+    _roles = FieldAttribute(isa='list', default=list, priority=90)
+
+    # Block (Task) Lists Attributes
+    _handlers = FieldAttribute(isa='list', default=list)
+    _pre_tasks = FieldAttribute(isa='list', default=list)
+    _post_tasks = FieldAttribute(isa='list', default=list)
+    _tasks = FieldAttribute(isa='list', default=list)
+
+    # Flag/Setting Attributes
+    _force_handlers = FieldAttribute(isa='bool', default=context.cliargs_deferred_get('force_handlers'), always_post_validate=True)
+    _max_fail_percentage = FieldAttribute(isa='percent', always_post_validate=True)
+    _serial = FieldAttribute(isa='list', default=list, always_post_validate=True)
+    _strategy = FieldAttribute(isa='string', default=C.DEFAULT_STRATEGY, always_post_validate=True)
+    _order = FieldAttribute(isa='string', always_post_validate=True)
+```
+
+
+```Base Python class; attributes```
+
+```xml
+
+class Base(FieldAttributeBase):
+
+    _name = FieldAttribute(isa='string', default='', always_post_validate=True, inherit=False)
+
+    # connection/transport
+    _connection = FieldAttribute(isa='string', default=context.cliargs_deferred_get('connection'))
+    _port = FieldAttribute(isa='int')
+    _remote_user = FieldAttribute(isa='string', default=context.cliargs_deferred_get('remote_user'))
+
+    # variables
+    _vars = FieldAttribute(isa='dict', priority=100, inherit=False, static=True)
+
+    # module default params
+    _module_defaults = FieldAttribute(isa='list', extend=True, prepend=True)
+
+    # flags and misc. settings
+    _environment = FieldAttribute(isa='list', extend=True, prepend=True)
+    _no_log = FieldAttribute(isa='bool')
+    _run_once = FieldAttribute(isa='bool')
+    _ignore_errors = FieldAttribute(isa='bool')
+    _ignore_unreachable = FieldAttribute(isa='bool')
+    _check_mode = FieldAttribute(isa='bool', default=context.cliargs_deferred_get('check'))
+    _diff = FieldAttribute(isa='bool', default=context.cliargs_deferred_get('diff'))
+    _any_errors_fatal = FieldAttribute(isa='bool', default=C.ANY_ERRORS_FATAL)
+    _throttle = FieldAttribute(isa='int', default=0)
+
+    # explicitly invoke a debugger on tasks
+    _debugger = FieldAttribute(isa='string')
+
+    # Privilege escalation
+    _become = FieldAttribute(isa='bool', default=context.cliargs_deferred_get('become'))
+    _become_method = FieldAttribute(isa='string', default=context.cliargs_deferred_get('become_method'))
+    _become_user = FieldAttribute(isa='string', default=context.cliargs_deferred_get('become_user'))
+    _become_flags = FieldAttribute(isa='string', default=context.cliargs_deferred_get('become_flags'))
+    _become_exe = FieldAttribute(isa='string', default=context.cliargs_deferred_get('become_exe'))
+
+    # used to hold sudo/su stuff
+    DEPRECATED_ATTRIBUTES = []
+
+```
+
+```Task Python class; attributes```
+
+```xml
+
+class Task(Base, Conditional, Taggable, CollectionSearch):
+
+    """
+    A task is a language feature that represents a call to a module, with given arguments and other parameters.
+    A handler is a subclass of a task.
+    Usage:
+       Task.load(datastructure) -> Task
+       Task.something(...)
+    """
+
+    # =================================================================================
+    # ATTRIBUTES
+    # load_<attribute_name> and
+    # validate_<attribute_name>
+    # will be used if defined
+    # might be possible to define others
+
+    # NOTE: ONLY set defaults on task attributes that are not inheritable,
+    # inheritance is only triggered if the 'current value' is None,
+    # default can be set at play/top level object and inheritance will take it's course.
+
+    _args = FieldAttribute(isa='dict', default=dict)
+    _action = FieldAttribute(isa='string')
+
+    _async_val = FieldAttribute(isa='int', default=0, alias='async')
+    _changed_when = FieldAttribute(isa='list', default=list)
+    _delay = FieldAttribute(isa='int', default=5)
+    _delegate_to = FieldAttribute(isa='string')
+    _delegate_facts = FieldAttribute(isa='bool')
+    _failed_when = FieldAttribute(isa='list', default=list)
+    _loop = FieldAttribute()
+    _loop_control = FieldAttribute(isa='class', class_type=LoopControl, inherit=False)
+    _notify = FieldAttribute(isa='list')
+    _poll = FieldAttribute(isa='int', default=C.DEFAULT_POLL_INTERVAL)
+    _register = FieldAttribute(isa='string', static=True)
+    _retries = FieldAttribute(isa='int', default=3)
+    _until = FieldAttribute(isa='list', default=list)
+
+    # deprecated, used to be loop and loop_args but loop has been repurposed
+    _loop_with = FieldAttribute(isa='string', private=True, inherit=False)
+
+```
+
+
+```Handler Python class; attributes```
+
+```xml
+class Handler(Task):
+
+    _listen = FieldAttribute(isa='list', default=list, listof=string_types, static=True)
+
+
+```
+
+### What is a ```Play``` ? 
+
+A ```Play``` contains a set of ```task``` and ```Handlers``` for a set of ```hosts```.
+
+### What is a ```task``` ?
+
+A ```task``` is a set of instructions and reference of ```handler``` if needed.
+
+### What is a ```Handler``` ?
+
+A handler points to another  ```task``` that needs to be done or triggered after any change is done by a ```task```. Remember the word ```any change```. If nothing is changed no ```handler``` will be triggered. 
+
+```Example of a play``` [example1](./examples/example1.yaml)
+
+```xml
+---
+
+- hosts: Infra
+  become: yes
+  tasks:
+    - name: install vsftpd on ubuntu
+      apt: name=vsftpd update_cache=yes state=latest
+      ignore_errors: yes
+      notify: start vsftpd
+  handlers:
+     - name: start vsftpd
+       service: name=vsftpd enabled=yes state=started
+
+```
+Here ```notify``` triggers a ```handler```. ```Service``` has three args, ```name``` name of the ```service```, ```enabled```, a boolean that states whether this ```service``` is going to start ```on boot time```, ```state```  as ```started``` means currrent expected ```state``` is ```started```.
+
+To ```run``` this playbook,
+
+``` ansible-playbook example1.yaml ```
 
