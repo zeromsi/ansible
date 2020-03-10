@@ -427,3 +427,50 @@ Another way of doing this,[example](./examples/conditionals2.yaml)
 ```
 Here ```ansible_os_family``` is ```fact``.
 
+
+## Ansible loops
+
+Ansible supports many types of loops. Let's explore some,
+
+[Standard loop](./examples/standard_loop.yaml)
+
+
+
+```xml
+---
+- hosts: Infra
+  become: yes
+  tasks:
+    - name: install stuff
+      apt: name={{ item }} update_cache=yes state=latest
+      with_items:
+         - vim
+         - name
+         - apache2
+```
+
+```xml
+---
+- hosts: Infra
+  become: yes
+  tasks:
+    - name: show contents
+      debug: msg={{item}}
+      with_file:
+         - file1.txt
+         - file2.txt
+
+```
+
+```xml
+---
+- hosts: Infra
+  become: yes
+  tasks:
+    - name: print sequence
+      debug: msg={{item}}
+      with_sequence: star=1 end=10
+
+```
+
+[learn more about loops](https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html)
