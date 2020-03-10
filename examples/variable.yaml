@@ -1,0 +1,9 @@
+---
+
+- hosts: Infra
+  vars: 
+    - var1: hello
+    - var2: world
+  tasks:
+    - name: echo hello world
+      shell: echo "{{var1}} {{var2}} "

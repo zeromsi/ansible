@@ -319,7 +319,7 @@ A ```Play``` contains a set of ```task``` and ```Handlers``` for a set of ```hos
 
 ### What is a ```task``` ?
 
-A ```task``` is a set of instructions and reference of ```handler``` if needed.
+A ```task``` is a set of instructions [using ```command```, ```shell```,```file``` or ```raw``` module] and reference of ```handler``` if needed.
 
 ### What is a ```Handler``` ?
 
@@ -347,4 +347,40 @@ Here ```notify``` triggers a ```handler```. ```Service``` has three args, ```nam
 To ```run``` this playbook,
 
 ``` ansible-playbook example1.yaml ```
+
+## Ansible variables and facts
+
+Declare variable like follwoing, [example](./examples/variable.yaml), 
+
+```xml
+---
+- hosts: Infra
+  vars: 
+    - var1: hello
+    - var2: world
+  tasks:
+    - name: echo hello world
+      shell: echo "{{var1}} {{var2}} "
+```
+What are ```facts``` ?
+
+```Facts``` are a wide range ```variables``` those can be referenced inside our ```playbooks```. 
+```Fact``` inculdes,
+
+- CPU type
+- OS family
+- RAM amount
+- IP address
+- CPU Core
+
+and lot more.
+
+To list all of facts run the following command,
+
+```
+ansible [goup name] -m setup
+```
+For example,
+
+``` ansible Infra -m setup ```
 
