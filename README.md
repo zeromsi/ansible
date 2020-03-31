@@ -473,4 +473,51 @@ Ansible supports many types of loops. Let's explore some,
 
 ```
 
+## Some shortcuts
+
+To wait until all the pods are running,
+
+```xml
+- name: wait for pods to come up
+  shell: kubectl get pods -n name_of_namespace -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+```
+To generate string and set to variables or facts
+
+```xml
+- name: reset klovercloud_super_admin_username and klovercloud_super_admin_password
+  set_fact:
+    admin_username: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+```
+To create a directory
+
+```xml
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/klovercloud/configs  recurse=yes state=directory
+  when: >
+    inventory_hostname == "kube-master-0"
+```
+
+To copy files from template to the directory
+
+```xml
+
+- name: Copy harbor installation, klovercloud-harbor and mongodb descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'filename.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/configs/filename.yaml'  } 
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+```
+To apply to master only
+```xml
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/configs/filename.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+```
+
 [learn more about loops](https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html)
