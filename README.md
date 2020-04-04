@@ -519,5 +519,18 @@ To apply to master only
   when: >
     inventory_hostname == "kube-master-0" 
 ```
+Using k8s,
+
+```xml
+- name: deploy Kafka
+  k8s:
+   state: present
+   definition: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/configs/filename.yaml') }}"
+   wait: yes
+   wait_timeout: 300
+   wait_condition:
+    type: Complete
+    status: True
+```
 
 [learn more about loops](https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html)
