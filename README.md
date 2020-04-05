@@ -534,7 +534,7 @@ Using k8s,
 ```
 Make curl inside pod
 ```xml
-- name: Request to create a facade Service access token
+- name: Curl inside a pod
   shell: kubectl -n {{ namespace }} exec -it $(kubectl -n {{ namespace }} get pod -l "app={{ label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ port }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ token }}' -d '{\"userId\":\"12\"}'"
   register: api_access_token
 
