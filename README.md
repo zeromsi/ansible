@@ -535,12 +535,12 @@ Using k8s,
 Make curl inside pod
 ```xml
 - name: Request to create a facade Service access token
-  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"12\"}'"
-  register: facade_api_access_token
+  shell: kubectl -n {{ namespace }} exec -it $(kubectl -n {{ namespace }} get pod -l "app={{ label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ port }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ token }}' -d '{\"userId\":\"12\"}'"
+  register: api_access_token
 
-- name: reset facade_api_access_token
+- name: reset api_access_token
   set_fact:
-    facade_api_access_token: "{{ facade_api_access_token.stdout | from_json }}"
+    api_access_token: "{{ api_access_token.stdout | from_json }}"
  ```
 
 [learn more about loops](https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html)
